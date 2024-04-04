@@ -6,13 +6,13 @@ import { loadFragment } from '../fragment/fragment.js';
  * @param {Element} block The footer block element
  */
 export default async function decorate(block) {
-  const footerMeta = getMetadata('hero');
+  const footerMeta = getMetadata('blocks/hero');
   block.textContent = '';
 
   // load footer fragment
-  const footerPath = footerMeta.footer || '/hero';
+  const footerPath = footerMeta.footer || '/blocks/hero';
   const fragment = await loadFragment(footerPath);
-console.log('footerPath', footerPath);
+
   // decorate footer DOM
   const footer = document.createElement('div');
   while (fragment.firstElementChild) footer.append(fragment.firstElementChild);

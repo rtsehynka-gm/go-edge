@@ -697,6 +697,53 @@ async function waitForLCP(lcpBlocks) {
   });
 }
 
+/**
+ *  fetchQuery
+ * @param query
+ * @returns {Promise<never>}
+ */
+async function fetchGetQuery(query) {
+  const targetURL = new URL('https://pwadev.gomage.dev/graphql');
+  targetURL.searchParams.append('query', query);
+  return fetch(targetURL.toString(), {
+    method: 'GET',
+    mode: 'no-cors', // no-cors, same-origin
+  })
+    .then((result) => {
+      console.log(result);
+      return {
+        data: {
+          categories: {
+            items: [{
+              uid: 'Mg==',
+              popular_category: [{
+                name: 'Clothes', url_key: 'women', url_path: 'women', popular_category_image: '\/media\/catalog\/category\/clothes3-removebg-preview.png', show_popular_category: true,
+              }, {
+                name: 'Jackets', url_key: 'jackets', url_path: 'women\/tops-women\/jackets', popular_category_image: '\/media\/catalog\/category\/Jacket-PNG-Clipart-removebg-preview_1.png', show_popular_category: true,
+              }, {
+                name: 'Hoodies', url_key: 'hoodies-and-sweatshirts-women', url_path: 'women\/tops-women\/hoodies-and-sweatshirts-women', popular_category_image: '\/media\/catalog\/category\/Hoodie.png', show_popular_category: true,
+              }, {
+                name: 'Clearance', url_key: 'sale', url_path: 'sale', popular_category_image: '\/media\/catalog\/category\/sunglasses_1.png', show_popular_category: true,
+              }, {
+                name: 'Tops', url_key: 'tops-women', url_path: 'women\/tops-women', popular_category_image: '\/media\/catalog\/category\/tops.png', show_popular_category: true,
+              }, {
+                name: 'Bras & Tanks', url_key: 'tanks-women', url_path: 'women\/tops-women\/tanks-women', popular_category_image: '\/media\/catalog\/category\/tops3-removebg-preview.png', show_popular_category: true,
+              }, {
+                name: 'New Arrivals', url_key: 'new-arrivals', url_path: 'women\/tops-women\/new-arrivals', popular_category_image: '\/media\/catalog\/category\/watch4-removebg-preview.png', show_popular_category: true,
+              }, {
+                name: 'Bottoms', url_key: 'bottoms-women', url_path: 'women\/bottoms-women', popular_category_image: '\/media\/catalog\/category\/bottom.png', show_popular_category: true,
+              }, {
+                name: 'Products', url_key: 'what-is-new', url_path: 'what-is-new', popular_category_image: '\/media\/catalog\/category\/51xWmdY-svL._SX679._SX._UX._SY._UY_-removebg-preview_1_.png', show_popular_category: true,
+              }, {
+                name: 'Health & Beauty', url_key: 'health-beauty', url_path: 'health-beauty', popular_category_image: '\/media\/catalog\/category\/health1-removebg-preview.png', show_popular_category: true,
+              }],
+            }],
+          },
+        },
+      };
+    });
+}
+
 init();
 
 export {
@@ -723,4 +770,5 @@ export {
   toClassName,
   updateSectionsStatus,
   waitForLCP,
+  fetchGetQuery,
 };
