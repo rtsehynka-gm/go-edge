@@ -1,4 +1,4 @@
-async function fetchQuery(query, variables, GET = true, token = false) {
+async function fetchQuery(graphql, variables, GET = true, token = false) {
   const config = getConfig();
   const targetURL = config.magento.url;
   const headers = {
@@ -7,12 +7,12 @@ async function fetchQuery(query, variables, GET = true, token = false) {
     Accept: 'application/json',
     Host: targetURL.host,
   };
+  const query = graphql.replace(/(?:\r\n|\r|\n|\t|[\s]{4})/g, ' ').replace(/\s\s+/g, ' ');
 
   if (config.magento.store) {
     headers.store = config.magento.store;
   }
 
-  console.log('Fetching query: %s', query);
   if (GET) {
     const params = new URLSearchParams({
       query,
@@ -38,7 +38,6 @@ async function fetchQuery(query, variables, GET = true, token = false) {
     })
     .catch((err) => {
       console.log('Error received: %s', err);
-
       console.error(err);
 
       throw err;
