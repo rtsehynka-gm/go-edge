@@ -1,0 +1,83 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders with items 1`] = `
+<div
+  className="root"
+>
+  <h2
+    className="title"
+  >
+    <div
+      componentName="Formatted Message Component"
+      defaultMessage="Popular Categories"
+      id="popularCategories.title"
+    />
+  </h2>
+  <div
+    className="items"
+  >
+    <div
+      className="item"
+    >
+      <span
+        className="linkTitle"
+      >
+        <div
+          componentName="Formatted Message Component"
+          defaultMessage="view more"
+          id="popularCategories.link"
+        />
+      </span>
+      <div
+        alt="test Category"
+        classes={
+          Object {
+            "root": "container",
+          }
+        }
+        componentName="Image"
+        height={200}
+        src="imageTest.png"
+        width={300}
+      />
+      <p
+        className="itemName"
+      >
+        test Category
+      </p>
+    </div>
+    <div
+      className="item"
+    >
+      <span
+        className="linkTitle"
+      >
+        <div
+          componentName="Formatted Message Component"
+          defaultMessage="view more"
+          id="popularCategories.link"
+        />
+      </span>
+      <div
+        alt="test Category3"
+        classes={
+          Object {
+            "root": "container",
+          }
+        }
+        componentName="Image"
+        height={200}
+        src="imageTest3.png"
+        width={300}
+      />
+      <p
+        className="itemName"
+      >
+        test Category3
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders without items 1`] = `null`;

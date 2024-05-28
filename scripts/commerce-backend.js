@@ -1,59 +1,52 @@
-async function fetchQuery(graphql, variables, GET = true, token = false) {
-  const config = getConfig();
-  const targetURL = config.magento.url;
-  const headers = {
-    'Content-Type': 'application/json',
-    'Accept-Encoding': 'gzip',
-    Accept: 'application/json',
-    Host: targetURL.host,
-  };
-  const query = graphql.replace(/(?:\r\n|\r|\n|\t|[\s]{4})/g, ' ').replace(/\s\s+/g, ' ');
-
-  if (config.magento.store) {
-    headers.store = config.magento.store;
-  }
-
-  if (GET) {
-    const params = new URLSearchParams({
+async function checkApolloCache(client, query) {
+  try {
+    const cachedResponse = await client.query({
       query,
-      variables: JSON.stringify(variables),
+      fetchPolicy: 'cache-only', // Запитати тільки кеш, не робити запит на сервер
     });
-    return fetch(
-      `${config.magento.url}?${params.toString()}`,
-      { headers },
-    );
+    return cachedResponse;
+  } catch (error) {
+    console.error('Error checking Apollo cache:', error);
+    return null;
+  }
+}
+
+/**
+ *
+ * @param query
+ * @param method
+ * @returns {Promise<*>}
+ */
+async function useQuery(query, method = 'GET') {
+  const config = getConfig();
+  // Створення ApolloClient
+  const { ApolloClient, InMemoryCache, HttpLink } = await import('@apollo/client/core');
+  const fetch = (await import('axios')).default;
+  const params = query.loc ? query.loc.source.body : query;
+  const uri = method === 'GET' ? `${config.magento.url}?query=${params.replace(/(?:\r\n|\r|\n|\t|[\s]{4})/g, ' ').replace(/\s\s+/g, ' ')}` : config.magento.url;
+  const { data } = await fetch.get(uri);
+  const client = new ApolloClient({
+    link: new HttpLink({
+      uri, // URL
+      fetch,
+      useGETForQueries: method === 'GET',
+    }),
+    cache: new InMemoryCache(),
+  });
+  return data;
+  // return cached response if found
+  const cachedResponse = await checkApolloCache(client, query);
+  if (cachedResponse?.data.length > 0) {
+    console.log('Cached response found:', cachedResponse);
+    return cachedResponse;
   }
 
-  return fetch(targetURL.toString(), {
-    agent: 'https:',
-    body: JSON.stringify({ query }),
-    headers,
-    method: 'POST',
-  })
-    .then((result) => {
-      console.log('Result received');
-      console.log('Status: %s', result.status);
+  // make the request
+  /* const data = await client.query({
+    query,
+  }); */
 
-      return result.json();
-    })
-    .catch((err) => {
-      console.log('Error received: %s', err);
-      console.error(err);
-
-      throw err;
-    })
-    .then((json) => {
-      if (json && json.errors && json.errors.length > 0) {
-        return Promise.reject(
-          new Error(
-            `${json.errors[0].message
-            } (... ${json.errors.length} errors total)`,
-          ),
-        );
-      }
-
-      return json.data;
-    });
+  return data;
 }
 
 function getConfig() {
@@ -66,5 +59,5 @@ function getConfig() {
 }
 
 export {
-  fetchQuery,
+  useQuery,
 };

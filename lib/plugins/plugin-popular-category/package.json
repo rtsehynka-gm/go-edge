@@ -1,0 +1,7 @@
+{
+  "name": "@gomage/plugin-popular-category",
+  "version": "1.0.7",
+  "description": "GoMage Popular Category",
+  "main": "index.js",
+  "author": "GoMage"
+}
