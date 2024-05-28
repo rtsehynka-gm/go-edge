@@ -1,3 +1,4 @@
+import { cartApi } from '../../scripts/minicart/api.js';
 import { getMetadata } from '../../scripts/aem.js';
 import { loadFragment } from '../fragment/fragment.js';
 
@@ -87,16 +88,17 @@ function toggleMenu(nav, navSections, forceExpanded = null) {
 }
 
 /**
- * decorates the header, mainly the nav
+ * loads and decorates the header, mainly the nav
  * @param {Element} block The header block element
  */
 export default async function decorate(block) {
   // load nav as fragment
   const navMeta = getMetadata('nav');
-  const navPath = navMeta ? new URL(navMeta).pathname : '/nav';
+  const navPath = navMeta ? new URL(navMeta, window.location).pathname : '/nav';
   const fragment = await loadFragment(navPath);
 
   // decorate nav DOM
+  block.textContent = '';
   const nav = document.createElement('nav');
   nav.id = 'nav';
   while (fragment.firstElementChild) nav.append(fragment.firstElementChild);
@@ -127,6 +129,37 @@ export default async function decorate(block) {
       });
     });
   }
+
+  const navTools = nav.querySelector('.nav-tools');
+
+  // Minicart
+  const minicartButton = document.createRange().createContextualFragment(`<div class="minicart-wrapper">
+    <button type="button" class="nav-cart-button">0</button>
+    <div></div>
+  </div>`);
+  navTools.append(minicartButton);
+  navTools.querySelector('.nav-cart-button').addEventListener('click', () => {
+    cartApi.toggleCart();
+  });
+  cartApi.cartItemsQuantity.watch((quantity) => {
+    navTools.querySelector('.nav-cart-button').textContent = quantity;
+  });
+
+  // Search
+  const searchInput = document.createRange().createContextualFragment(`<div class="nav-search-input hidden">
+      <form id="search_mini_form" action="/search" method="GET">
+        <input id="search" type="search" name="q" placeholder="Search" />
+        <div id="search_autocomplete" class="search-autocomplete"></div>
+      </form>
+    </div>`);
+  document.body.querySelector('header').append(searchInput);
+
+  const searchButton = document.createRange().createContextualFragment('<button type="button" class="nav-search-button">Search</button>');
+  navTools.append(searchButton);
+  navTools.querySelector('.nav-search-button').addEventListener('click', async () => {
+    await import('./searchbar.js');
+    document.querySelector('header .nav-search-input').classList.toggle('hidden');
+  });
 
   // hamburger for mobile
   const hamburger = document.createElement('div');
